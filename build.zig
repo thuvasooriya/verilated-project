@@ -4,9 +4,6 @@ const print = std.debug.print;
 const run = std.ChildProcess.exec;
 
 pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
-
     const module_name = "alu";
 
     // Verilate step
@@ -20,7 +17,7 @@ pub fn build(b: *std.Build) void {
         "-cc",
         b.fmt("{s}.sv", .{module_name}),
         "--exe",
-        b.fmt("tb_{s}.cpp", .{module_name}),
+        b.fmt("{s}_tb.cpp", .{module_name}),
     });
     verilate_step.dependOn(&verilate_cmd.step);
 
@@ -38,7 +35,8 @@ pub fn build(b: *std.Build) void {
         "make",
         "-C",
         "obj_dir",
-        b.fmt("-f V{s}.mk", .{module_name}),
+        "-f",
+        b.fmt("V{s}.mk", .{module_name}),
         b.fmt("V{s}", .{module_name}),
     });
     build_step.dependOn(verilate_step);
